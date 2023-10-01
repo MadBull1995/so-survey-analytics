@@ -10,28 +10,29 @@
 
 
 # Data pipeline internals
+from sys import argv
 import fetch_data, \
     preprocess_data, \
     load_data, \
     helpers
 
-sep = 40 * "*"
+_SEP = 40 * "*"
+_AVAIL_YEARS = [
+    2023,
+]
 
-def main():
-    print("so-survey-analytics data pipeline process starting...")
+def main(args):
+    print(f"so-survey-analytics data pipeline process starting...\n{args = }")
 
     # Global configurations and setup
     cfgs = helpers.setup()
 
     # Init years list - which we will iterate for the data fetch
-    # TODO: Impl more intuative year parsing maybe using args
-    years = [
-        2023
-    ]
+    years = _parse_args(args)
 
     # (1) Fetching data + Unpacking .zip files per year
     for year in years:
-        print(f"{sep}\nProcessing so-survey data for {year}\n{sep}")
+        print(f"{_SEP}\nProcessing so-survey data for {year}\n{_SEP}")
         data = fetch_data.fetch(year)
     
         # (2) Preprocessing the raw data
@@ -42,5 +43,18 @@ def main():
 
     print(f"finished loading so-survey-analytics data to {cfgs}")
 
+def _parse_args(args):
+    if len(args) == 0:
+        return None
+    else:
+        for year in args:
+            if int(year) not in _AVAIL_YEARS:
+                raise Exception(
+                    "survey year '{0}' is not available to data pipeline.\nif you think the year '{0}' should exists please open a new issue: https://github.com/MadBull1995/so-survey-analytics/issues/new"
+                    .format(year)
+                )
+        return [int(y) for y in  args]
+
 if __name__ == '__main__':
-    main()
+    args = argv[1:]
+    main(args)
