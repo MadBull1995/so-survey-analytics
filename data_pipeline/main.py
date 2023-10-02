@@ -7,7 +7,7 @@
 #   3. loading the data to out provided PostgreSQL DB instance (See README.md for more setup information)
 
 # 3rd parties
-
+# TODO if any?
 
 # Data pipeline internals
 from sys import argv
@@ -18,7 +18,12 @@ import fetch_data, \
 
 _SEP = 40 * "*"
 _AVAIL_YEARS = [
+    2019,
+    2020,
+    2021,
+    2022,
     2023,
+    # TODO add you futuristic year
 ]
 
 def main(args):
@@ -39,13 +44,15 @@ def main(args):
         processed = preprocess_data.process(data)
 
         # (3) Load the processed data
-        load_data.load(processed)
+        load_data.load(year, processed, cfgs)
 
-    print(f"finished loading so-survey-analytics data to {cfgs}")
+    print(f"\n* finished loading so-survey-analytics data to {cfgs}")
 
 def _parse_args(args):
+    """Just parsing args passed from shell"""
+
     if len(args) == 0:
-        return None
+        return _AVAIL_YEARS
     else:
         for year in args:
             if int(year) not in _AVAIL_YEARS:

@@ -1,6 +1,7 @@
 # 3rd parties
 import requests
 import zipfile
+import pandas as pd
 
 # Internals
 import helpers
@@ -37,8 +38,20 @@ def fetch(year):
         
         _write(file_path, response.content, year)
         _unpack(file_path, year)
+        # Define the path to the extracted CSV file.
+        csv_path = f"{_SO_SURVEY_PREFIX}-{year}/survey_results_public.csv"
+
+        # Read the CSV file into a Pandas DataFrame.
+        try:
+            df = pd.read_csv(csv_path)
+            print(f"Successfully loaded the survey data for the year {year}.")
+            return df
+
+        except FileNotFoundError:
+            print(f"Could not find the survey data for the year {year}.")
+            return None
         
     else:
         print(f"Failed to download the survey data for the year {year}. Status code: {response.status_code}")
 
-    
+
