@@ -21,14 +21,28 @@ git clone https://github.com/MadBull1995/so-survey-analytics.git
 cd so-survey-analytics
 ```
 
+> Recommended setup virtual environment
+
+Setup a python `virtual env`
+```bash
+python3 -m venv so_survey
+```
+### Activate Virtual Environment
+
+On macOS and Linux:
+```bash
+source venv/bin/activate
+```
+
+On Windows:
+```bash
+.\venv\Scripts\activate
+```
+
 #### Requirements
-- Python 3.x
-- Requests
-- BeautifulSoup
-- SQLAlchemy
 
 ```bash
-pip install requirments.txt
+pip install -r requirements.txt
 ```
 
 ### 1. Data Ingestion
@@ -37,7 +51,7 @@ To start the pipeline script do the following:
 ```bash
 # Within the repo root directory
 cd ./data_pipeline
-python main.py
+python main.py [YEARS] --cache
 ```
 
 #### Steps

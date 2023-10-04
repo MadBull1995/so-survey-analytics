@@ -2,5 +2,5 @@
 __pycache__/
 so_survey/
 # Internals
-data_pipeline/stack-overflow-developer-servey-*
+data_pipeline/data/
 .env

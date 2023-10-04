@@ -1,13 +1,39 @@
 import pandas as pd
-# from sklearn.preprocessing import StandardScaler, LabelEncoder
 
-def handle_missing_values(df) -> pd.DataFrame:
+def normalize_age(age):
+    try:
+        age = float(age)
+    except ValueError:
+        return age
+    
+    if age < 18:
+        return 'Under 18 years old'
+    elif 18 <= age <= 24:
+        return '18-24 years old'
+    elif 25 <= age <= 34:
+        return '25-34 years old'
+    elif 35 <= age <= 44:
+        return '35-44 years old'
+    elif 45 <= age <= 54:
+        return '45-54 years old'
+    elif 55 <= age <= 64:
+        return '55-64 years old'
+    else:
+        return '65 years or older'
+
+def handle_missing_values(df, year) -> pd.DataFrame:
     """
     Handle missing values in the DataFrame.
     You can add your custom logic here.
     """
 
-    df['Employment'].fillna('Unknown', inplace=True)
+    if year <= 2017:
+        df['EmploymentStatus'].fillna('Unknown', inplace=True)
+        df['Employment'] = df['EmploymentStatus']
+        df = df.drop(columns=['EmploymentStatus'])
+    else:
+        df['Employment'].fillna('Unknown', inplace=True)
+        df['Age'].fillna('Prefer not to say', inplace=True)
 
     # df.fillna(df.median(), inplace=True)
     return df
@@ -52,12 +78,12 @@ def feature_engineering(df) -> pd.DataFrame:
 #     df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
 #     return df
 
-def process(data: pd.DataFrame):
+def process(data: pd.DataFrame, year):
     """
     The 'Data Transformation' stage
     """
     # Handle Missing Values
-    data = handle_missing_values(data)
+    data = handle_missing_values(data, year)
 
     # Remove Duplicates
     data = remove_duplicates(data)
@@ -65,15 +91,16 @@ def process(data: pd.DataFrame):
     # Convert Data Types
     data = convert_data_types(data)
 
-    # Normalize Text Columns (if you have any)
-    # text_columns = ['text_column1', 'text_column2']
-    # data = normalize_text(data, text_columns)
-
+    # Normalize Text Columns
+    if year > 2017:
+        data['Age'] = data['Age'].apply(normalize_age)
+        
     # Feature Engineering
     data = feature_engineering(data)
 
     # Normalize Numeric Columns (if you have any)
     # numeric_columns = ['numeric_column1', 'numeric_column2']
     # data = normalize_numeric(data, numeric_columns)
-    print(f"# rows: {data.count()['ResponseId']}")
+    print(f"# rows: {len(data)}")
     return data
+
